@@ -4,3 +4,4 @@
 * Yannick Vaucher <yannick.vaucher@camptocamp.com>
 * Ronald Portier <ronald@therp.nl>
 * Simone Orsi <simone.orsi@camptocamp.com>
+* Heliconia Solutions Pvt. Ltd. <https://www.heliconia.io>

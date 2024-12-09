@@ -216,11 +216,11 @@ class TestInvoiceImport(SavepointCase):
             parsed_inv["invoice_number"] = "INV-%s" % import_c["invoice_line_method"]
             inv = (
                 self.env["account.invoice.import"]
-                .with_company(self.company.id)
+                .with_context(company_id=self.company.id)
                 .create_invoice(parsed_inv, import_c)
             )
             logger.debug("testing import with import config=%s", import_c)
-            self.assertEqual(inv.move_type, parsed_inv["type"])
+            self.assertEqual(inv.type, parsed_inv["type"])
             self.assertEqual(inv.company_id.id, self.company.id)
             self.assertFalse(
                 inv.currency_id.compare_amounts(
@@ -278,11 +278,11 @@ class TestInvoiceImport(SavepointCase):
             parsed_inv["invoice_number"] = "INV-%s" % import_c["invoice_line_method"]
             inv = (
                 self.env["account.invoice.import"]
-                .with_company(self.company.id)
+                .with_context(company_id=self.company.id)
                 .create_invoice(parsed_inv, import_c)
             )
             logger.debug("testing import with import config=%s", import_c)
-            self.assertEqual(inv.move_type, parsed_inv["type"])
+            self.assertEqual(inv.type, parsed_inv["type"])
             self.assertEqual(inv.company_id.id, self.company.id)
             self.assertFalse(
                 inv.currency_id.compare_amounts(
@@ -312,8 +312,7 @@ class TestInvoiceImport(SavepointCase):
                     "product": {"code": "AII-TEST-PRODUCT"},
                     "name": "Super product",
                     "qty": 3,
-                    "discount": 10,
-                    "price_unit": 100,
+                    "price_unit": 10.22,
                     "date_start": "2017-08-01",
                     "date_end": "2017-08-31",
                     "taxes": [
@@ -332,13 +331,11 @@ class TestInvoiceImport(SavepointCase):
                 continue
             inv = (
                 self.env["account.invoice.import"]
-                .with_company(self.company.id)
+                .with_context(company_id=self.company.id)
                 .create_invoice(parsed_inv, import_config)
             )
-            self.assertFalse(
-                inv.currency_id.compare_amounts(inv.amount_untaxed, 270.00)
-            )
-            self.assertFalse(inv.currency_id.compare_amounts(inv.amount_total, 272.70))
+            self.assertFalse(inv.currency_id.compare_amounts(inv.amount_untaxed, 30.66))
+            self.assertFalse(inv.currency_id.compare_amounts(inv.amount_total, 30.97))
             self.assertEqual(
                 fields.Date.to_string(inv.invoice_date), parsed_inv["date"]
             )
@@ -444,7 +441,7 @@ Nina
         move = self.env["account.move"].search(
             [
                 ("company_id", "=", self.company.id),
-                ("move_type", "=", "in_invoice"),
+                ("type", "=", "in_invoice"),
                 ("invoice_source_email", "like", sender_email),
                 ("state", "=", "draft"),
             ]
@@ -461,7 +458,7 @@ Nina
         move = self.env["account.move"].search(
             [
                 ("company_id", "=", self.company.id),
-                ("move_type", "=", "in_invoice"),
+                ("type", "=", "in_invoice"),
                 ("partner_id", "=", self.partner_with_email.id),
                 ("state", "=", "draft"),
             ]
@@ -479,7 +476,7 @@ Nina
         move = self.env["account.move"].search(
             [
                 ("company_id", "=", self.company.id),
-                ("move_type", "=", "in_invoice"),
+                ("type", "=", "in_invoice"),
                 ("partner_id", "=", partner.id),
                 ("state", "=", "draft"),
             ]
